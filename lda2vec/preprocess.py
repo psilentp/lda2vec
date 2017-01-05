@@ -46,13 +46,14 @@ def tokenize(texts, max_length, skip=-2, attr=LOWER, merge=False, nlp=None,
         Keys are the word index, and values are the string. The pad index gets
         mapped to None
 
+    >>> import six
     >>> sents = [u"Do you recall a class action lawsuit", u"hello zombo.com"]
     >>> arr, vocab = tokenize(sents, 10, merge=True)
     >>> arr.shape[0]
     2
     >>> arr.shape[1]
     10
-    >>> w2i = {w: i for i, w in vocab.iteritems()}
+    >>> w2i = {w: i for i, w in six.iteritems(vocab)}
     >>> arr[0, 0] == w2i[u'do']  # First word and its index should match
     True
     >>> arr[0, 1] == w2i[u'you']

@@ -4,7 +4,7 @@
 # This example loads a large 800MB Hacker News comments dataset
 # and preprocesses it. This can take a few hours, and a lot of
 # memory, so please be patient!
-
+import six
 from lda2vec import preprocess, Corpus
 import numpy as np
 import pandas as pd
@@ -61,7 +61,7 @@ pruned = corpus.filter_count(compact, min_count=10)
 # Words tend to have power law frequency, so selectively
 # downsample the most prevalent words
 clean = corpus.subsample_frequent(pruned)
-print "n_words", np.unique(clean).max()
+six.print_("n_words", np.unique(clean).max())
 
 # Extract numpy arrays over the fields we want covered by topics
 # Convert to categorical variables
@@ -83,9 +83,9 @@ features['story_id_codes'] = story_id
 features['author_id_codes'] = story_id
 features['time_id_codes'] = time_id
 
-print "n_authors", author_id.max()
-print "n_stories", story_id.max()
-print "n_times", time_id.max()
+six.print("n_authors", author_id.max())
+six.print("n_stories", story_id.max())
+six.print("n_times", time_id.max())
 
 # Extract outcome supervised features
 ranking = features['comment_ranking'].values

@@ -7,6 +7,8 @@ import os.path
 import pickle
 import time
 
+import six
+
 from chainer import serializers
 import chainer.optimizers as O
 import numpy as np
@@ -33,7 +35,7 @@ words = corpus.word_list(vocab)[:n_vocab]
 
 model = NVDM(n_vocab, n_units)
 if os.path.exists('nvdm.hdf5'):
-    print "Reloading from saved"
+    six.print_("Reloading from saved")
     serializers.load_hdf5("nvdm.hdf5", model)
 # model.to_gpu()
 optimizer = O.Adam()
@@ -59,6 +61,6 @@ for epoch in range(500):
         rate = batchsize / dt
         logs = dict(rec=float(rec.data), epoch=epoch, j=j,
                     kl=float(kl.data), rate=rate)
-        print msg.format(**logs)
+        six.print_(msg.format(**logs))
         j += 1
     serializers.save_hdf5("nvdm.hdf5", model)

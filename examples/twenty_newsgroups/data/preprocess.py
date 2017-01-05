@@ -6,6 +6,8 @@
 import logging
 import pickle
 
+import six
+
 from sklearn.datasets import fetch_20newsgroups
 import numpy as np
 
@@ -26,7 +28,7 @@ def clean(line):
 # Preprocess data
 max_length = 10000   # Limit of 10k words per document
 # Convert to unicode (spaCy only works with unicode)
-texts = [unicode(clean(d)) for d in texts]
+texts = [six.text_type(clean(d)) for d in texts]
 tokens, vocab = preprocess.tokenize(texts, max_length, merge=False,
                                     n_threads=4)
 corpus = Corpus()
