@@ -100,11 +100,11 @@ flattened, features_flat = corpus.compact_to_flat(pruned, *feature_arrs)
 (story_id_f, author_id_f, time_id_f, ranking_f, score_f) = features_flat
 
 # Save the data
-pickle.dump(corpus, open('corpus', 'w'), protocol=2)
-pickle.dump(vocab, open('vocab', 'w'), protocol=2)
+pickle.dump(corpus, open('corpus', 'wb'), protocol=2)
+pickle.dump(vocab, open('vocab', 'wb'), protocol=2)
 features.to_pickle('features.pd')
 data = dict(flattened=flattened, story_id=story_id_f, author_id=author_id_f,
             time_id=time_id_f, ranking=ranking_f, score=score_f,
             author_name=author_name, author_index=author_id)
 np.savez('data', **data)
-np.save(open('tokens', 'w'), tokens)
+np.save(open('tokens', 'wb'), tokens)

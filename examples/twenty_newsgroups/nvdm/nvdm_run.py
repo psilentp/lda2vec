@@ -16,8 +16,8 @@ import numpy as np
 from lda2vec import utils
 from nvdm import NVDM
 
-vocab = pickle.load(open('vocab.pkl', 'r'))
-corpus = pickle.load(open('corpus.pkl', 'r'))
+vocab = pickle.load(open('vocab.pkl', 'rb'))
+corpus = pickle.load(open('corpus.pkl', 'rb'))
 bow = np.load("bow.npy").astype('float32')
 # Remove bow counts on the first two tokens, which <SKIP> and <EOS>
 bow[:, :2] = 0

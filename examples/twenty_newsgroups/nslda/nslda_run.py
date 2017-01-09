@@ -22,8 +22,8 @@ gpu_id = int(os.getenv('CUDA_GPU', 0))
 cuda.get_device(gpu_id).use()
 six.print_("Using GPU " + str(gpu_id))
 
-vocab = pickle.load(open('../data/vocab.pkl', 'r'))
-corpus = pickle.load(open('../data/corpus.pkl', 'r'))
+vocab = pickle.load(open('../data/vocab.pkl', 'rb'))
+corpus = pickle.load(open('../data/corpus.pkl', 'rb'))
 doc_id = np.load("../data/doc_ids.npy")
 flattened = np.load("../data/flattened.npy")
 

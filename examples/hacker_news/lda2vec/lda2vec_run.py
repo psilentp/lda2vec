@@ -23,9 +23,9 @@ cuda.get_device(gpu_id).use()
 six.print_("Using GPU " + str(gpu_id))
 
 # You must run preprocess.py before this data becomes available
-vocab = pickle.load(open('../data/vocab', 'r'))
-corpus = pickle.load(open('../data/corpus', 'r'))
-data = np.load(open('../data/data.npz', 'r'))
+vocab = pickle.load(open('../data/vocab', 'rb'))
+corpus = pickle.load(open('../data/corpus', 'rb'))
+data = np.load(open('../data/data.npz', 'rb'))
 flattened = data['flattened']
 story_id = data['story_id']
 author_id = data['author_id']
