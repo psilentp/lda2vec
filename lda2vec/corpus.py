@@ -546,7 +546,7 @@ class Corpus():
         if array is not None:
             data = array
             n_words = data.shape[0]
-        keys_raw = model.vocab.keys()
+        keys_raw = list(model.vocab.keys())
         keys = [s.encode('ascii', 'ignore') for s in keys_raw]
         lens = [len(s) for s in model.vocab.keys()]
         choices = np.array(keys, dtype='S')
