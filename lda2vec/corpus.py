@@ -1,5 +1,6 @@
 from collections import defaultdict
 import six
+import unicodedata
 import numpy as np
 import difflib
 import pandas as pd
@@ -547,9 +548,10 @@ class Corpus():
             data = array
             n_words = data.shape[0]
         keys_raw = list(model.vocab.keys())
-        keys = [s.encode('ascii', 'ignore') for s in keys_raw]
+        keys = [unicodedata.normalize('NFKD', s).encode('ascii', 'ignore').decode('ascii')
+                for s in keys_raw]
         lens = [len(s) for s in model.vocab.keys()]
-        choices = np.array(keys, dtype='S')
+        choices = np.array(keys, dtype='U')
         lengths = np.array(lens, dtype='int32')
         s, f = 0, 0
         rep0 = lambda w: w
