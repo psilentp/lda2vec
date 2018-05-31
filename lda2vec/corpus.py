@@ -1,10 +1,10 @@
 from collections import defaultdict
 import numpy as np
-import difflib
+#import difflib
 import pandas as pd
 
 try:
-    from pyxdameraulevenshtein import damerau_levenshtein_distance_withNPArray
+    from pyxdameraulevenshtein import damerau_levenshtein_distance_ndarray
 except ImportError:
     pass
 
@@ -96,6 +96,7 @@ class Corpus():
         """ Get the loose keys in order of decreasing frequency"""
         loose_counts = sorted(self.counts_loose.items(), key=lambda x: x[1],
                               reverse=True)
+        loose_counts = [i for i in loose_counts if i[0] not in self.specials.values()]
         keys = np.array(loose_counts)[:, 0]
         counts = np.array(loose_counts)[:, 1]
         order = np.argsort(counts)[::-1].astype('int32')
@@ -415,7 +416,7 @@ class Corpus():
         self._check_finalized()
         n_docs = word_compact.shape[0]
         max_length = word_compact.shape[1]
-        idx = word_compact > self.n_specials
+        idx = word_compact >= self.n_specials
         components_raveled = []
         msg = "Length of each component must much `word_compact` size"
         for component in components:
@@ -531,8 +532,8 @@ class Corpus():
         True
         """
         n_words = len(self.compact_to_loose)
-        from gensim.models.word2vec import Word2Vec
-        model = Word2Vec.load_word2vec_format(filename, binary=True)
+        import gensim
+        model = gensim.models.KeyedVectors.load_word2vec_format( filename, binary=True)
         n_dim = model.syn0.shape[1]
         data = np.random.normal(size=(n_words, n_dim)).astype('float32')
         data -= data.mean()
@@ -548,11 +549,11 @@ class Corpus():
         choices = np.array(keys, dtype='S')
         lengths = np.array(lens, dtype='int32')
         s, f = 0, 0
-        rep0 = lambda w: w
-        rep1 = lambda w: w.replace(' ', '_')
-        rep2 = lambda w: w.title().replace(' ', '_')
+        def rep0(w): return w
+        def rep1(w): return w.replace(' ', '_')
+        def rep2(w): return w.title().replace(' ', '_')
         reps = [rep0, rep1, rep2]
-        for compact in np.arange(top):
+        for compact in np.arange(min(top, n_words)):
             loose = self.compact_to_loose.get(compact, None)
             if loose is None:
                 continue
@@ -572,7 +573,7 @@ class Corpus():
                     idx = lengths >= len(word) - 3
                     idx &= lengths <= len(word) + 3
                     sel = choices[idx]
-                    d = damerau_levenshtein_distance_withNPArray(word, sel)
+                    d = damerau_levenshtein_distance_ndarray(word, sel)
                     choice = np.array(keys_raw)[idx][np.argmin(d)]
                     # choice = difflib.get_close_matches(word, choices)[0]
                     vector = model[choice]
@@ -677,8 +678,7 @@ class Corpus():
         for name, index in indices.items():
             tokens[name] = index
         a, b = tokens.copy(), tokens.copy()
-        mask = lambda x: np.prod([x[k + '_x'] == x[k + '_y']
-                                  for k in indices.keys()], axis=0)
+        def mask(x): return np.prod([x[k + '_x'] == x[k + '_y'] for k in indices.keys()], axis=0)
         group_keys = ['word_index_x', 'word_index_y', ]
         group_keys += [k + '_x' for k in indices.keys()]
         total = []
