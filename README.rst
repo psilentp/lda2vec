@@ -101,7 +101,9 @@ Minimum requirements:
 - NumPy 1.10+
 - Chainer 1.5.1+
 - spaCy 0.99+
-
+- gensim
+- panda
+- numexpr
 
 Requirements for some features:
 

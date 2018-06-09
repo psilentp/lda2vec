@@ -7,6 +7,8 @@ import os.path
 import pickle
 import time
 
+import six
+
 from chainer import serializers
 from chainer import cuda
 import chainer.optimizers as O
@@ -18,10 +20,10 @@ from nslda import NSLDA
 
 gpu_id = int(os.getenv('CUDA_GPU', 0))
 cuda.get_device(gpu_id).use()
-print "Using GPU " + str(gpu_id)
+six.print_("Using GPU " + str(gpu_id))
 
-vocab = pickle.load(open('../data/vocab.pkl', 'r'))
-corpus = pickle.load(open('../data/corpus.pkl', 'r'))
+vocab = pickle.load(open('../data/vocab.pkl', 'rb'))
+corpus = pickle.load(open('../data/corpus.pkl', 'rb'))
 doc_id = np.load("../data/doc_ids.npy")
 flattened = np.load("../data/flattened.npy")
 
@@ -42,7 +44,7 @@ words = corpus.word_list(vocab)[:n_vocab]
 
 model = NSLDA(counts, n_docs, n_topics, n_units, n_vocab)
 if os.path.exists('nslda.hdf5'):
-    print "Reloading from saved"
+    six.print_("Reloading from saved")
     serializers.load_hdf5("nslda.hdf5", model)
 model.to_gpu()
 optimizer = O.Adam()
@@ -73,7 +75,7 @@ for epoch in range(50000000):
         rate = batchsize / dt
         logs = dict(rec=float(rec.data), epoch=epoch, j=j,
                     ld=float(ld.data), rate=rate)
-        print msg.format(**logs)
+        six.print_(msg.format(**logs))
         j += 1
     if epoch % 100 == 0:
         serializers.save_hdf5("nslda.hdf5", model)

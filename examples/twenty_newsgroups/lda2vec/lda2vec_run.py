@@ -9,6 +9,8 @@ import pickle
 import time
 import shelve
 
+import six
+
 import chainer
 from chainer import cuda
 from chainer import serializers
@@ -21,7 +23,7 @@ from lda2vec_model import LDA2Vec
 
 gpu_id = int(os.getenv('CUDA_GPU', 0))
 cuda.get_device(gpu_id).use()
-print "Using GPU " + str(gpu_id)
+six.print_("Using GPU " + str(gpu_id))
 
 data_dir = os.getenv('data_dir', '../data/')
 fn_vocab = '{data_dir:s}/vocab.pkl'.format(data_dir=data_dir)
@@ -29,8 +31,8 @@ fn_corpus = '{data_dir:s}/corpus.pkl'.format(data_dir=data_dir)
 fn_flatnd = '{data_dir:s}/flattened.npy'.format(data_dir=data_dir)
 fn_docids = '{data_dir:s}/doc_ids.npy'.format(data_dir=data_dir)
 fn_vectors = '{data_dir:s}/vectors.npy'.format(data_dir=data_dir)
-vocab = pickle.load(open(fn_vocab, 'r'))
-corpus = pickle.load(open(fn_corpus, 'r'))
+vocab = pickle.load(open(fn_vocab, 'rb'))
+corpus = pickle.load(open(fn_corpus, 'rb'))
 flattened = np.load(fn_flatnd)
 doc_ids = np.load(fn_docids)
 vectors = np.load(fn_vectors)
@@ -67,13 +69,13 @@ term_frequency[tok_idx] = freq
 for key in sorted(locals().keys()):
     val = locals()[key]
     if len(str(val)) < 100 and '<' not in str(val):
-        print key, val
+        six.print_(key, val)
 
 model = LDA2Vec(n_documents=n_docs, n_document_topics=n_topics,
                 n_units=n_units, n_vocab=n_vocab, counts=term_frequency,
                 n_samples=15, power=power, temperature=temperature)
 if os.path.exists('lda2vec.hdf5'):
-    print "Reloading from saved"
+    six.print_("Reloading from saved")
     serializers.load_hdf5("lda2vec.hdf5", model)
 if pretrained:
     model.sampler.W.data[:, :] = vectors[:n_vocab, :]
@@ -96,7 +98,7 @@ for epoch in range(200):
     if j % 100 == 0 and j > 100:
         coherence = topic_coherence(top_words)
         for j in range(n_topics):
-            print j, coherence[(j, 'cv')]
+            six.print_(j, coherence[(j, 'cv')])
         kw = dict(top_words=top_words, coherence=coherence, epoch=epoch)
         progress[str(epoch)] = pickle.dumps(kw)
     data['doc_lengths'] = doc_lengths
@@ -119,6 +121,6 @@ for epoch in range(200):
         rate = batchsize / dt
         logs = dict(loss=float(l), epoch=epoch, j=j,
                     prior=float(prior.data), rate=rate)
-        print msg.format(**logs)
+        six.print_(msg.format(**logs))
         j += 1
     serializers.save_hdf5("lda2vec.hdf5", model)

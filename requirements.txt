@@ -1,5 +1,9 @@
+pandas>=0.18.0
+gensim>=0.13.4.1
+numexpr>=2.1
 chainer>=1.5.1
 numpy>=1.10
 spacy>=0.9
 scipy>=0.16.0
 sklearn
+six>=1.10.0

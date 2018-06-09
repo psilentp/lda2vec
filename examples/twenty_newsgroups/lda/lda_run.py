@@ -7,6 +7,8 @@ import os.path
 import pickle
 import time
 
+import six
+
 from chainer import serializers
 from chainer import cuda
 import chainer.optimizers as O
@@ -18,10 +20,10 @@ from lda import LDA
 
 gpu_id = int(os.getenv('CUDA_GPU', 0))
 cuda.get_device(gpu_id).use()
-print "Using GPU " + str(gpu_id)
+six.print("Using GPU " + str(gpu_id))
 
-vocab = pickle.load(open('vocab.pkl', 'r'))
-corpus = pickle.load(open('corpus.pkl', 'r'))
+vocab = pickle.load(open('vocab.pkl', 'rb'))
+corpus = pickle.load(open('corpus.pkl', 'rb'))
 bow = np.load("bow.npy").astype('float32')
 # Remove bow counts on the first two tokens, which <SKIP> and <EOS>
 bow[:, :2] = 0
@@ -43,7 +45,7 @@ words = corpus.word_list(vocab)[:n_vocab]
 
 model = LDA(n_docs, n_topics, n_units, n_vocab)
 if os.path.exists('lda.hdf5'):
-    print "Reloading from saved"
+    six.print_("Reloading from saved")
     serializers.load_hdf5("lda.hdf5", model)
 model.to_gpu()
 optimizer = O.Adam()
@@ -75,7 +77,7 @@ for epoch in range(50000000):
         rate = batchsize / dt
         logs = dict(rec=float(rec.data), epoch=epoch, j=j,
                     ld=float(ld.data), rate=rate)
-        print msg.format(**logs)
+        six.print_(msg.format(**logs))
         j += 1
     if epoch % 100 == 0:
         serializers.save_hdf5("lda.hdf5", model)

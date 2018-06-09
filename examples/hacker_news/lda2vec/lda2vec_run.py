@@ -8,6 +8,7 @@ import pickle
 import time
 
 import chainer
+import six
 from chainer import cuda
 from chainer import serializers
 import chainer.optimizers as O
@@ -19,12 +20,12 @@ from lda2vec_model import LDA2Vec
 
 gpu_id = int(os.getenv('CUDA_GPU', 0))
 cuda.get_device(gpu_id).use()
-print "Using GPU " + str(gpu_id)
+six.print_("Using GPU " + str(gpu_id))
 
 # You must run preprocess.py before this data becomes available
-vocab = pickle.load(open('../data/vocab', 'r'))
-corpus = pickle.load(open('../data/corpus', 'r'))
-data = np.load(open('../data/data.npz', 'r'))
+vocab = pickle.load(open('../data/vocab', 'rb'))
+corpus = pickle.load(open('../data/corpus', 'rb'))
+data = np.load(open('../data/data.npz', 'rb'))
 flattened = data['flattened']
 story_id = data['story_id']
 author_id = data['author_id']
@@ -69,7 +70,7 @@ model = LDA2Vec(n_stories=n_stories, n_story_topics=n_story_topics,
                 n_units=n_units, n_vocab=n_vocab, counts=term_frequency,
                 n_samples=15)
 if os.path.exists('lda2vec.hdf5'):
-    print "Reloading from saved"
+    six.print_("Reloading from saved")
     serializers.load_hdf5("lda2vec.hdf5", model)
 model.to_gpu()
 optimizer = O.Adam()
@@ -114,6 +115,6 @@ for epoch in range(5000):
         rate = batchsize / dt
         logs = dict(loss=float(l), epoch=epoch, j=j,
                     prior=float(prior.data), rate=rate)
-        print msg.format(**logs)
+        six.print_(msg.format(**logs))
         j += 1
     serializers.save_hdf5("lda2vec.hdf5", model)

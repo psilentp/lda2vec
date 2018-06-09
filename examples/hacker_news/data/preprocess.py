@@ -4,7 +4,7 @@
 # This example loads a large 800MB Hacker News comments dataset
 # and preprocesses it. This can take a few hours, and a lot of
 # memory, so please be patient!
-
+import six
 from lda2vec import preprocess, Corpus
 import numpy as np
 import pandas as pd
@@ -61,7 +61,7 @@ pruned = corpus.filter_count(compact, min_count=10)
 # Words tend to have power law frequency, so selectively
 # downsample the most prevalent words
 clean = corpus.subsample_frequent(pruned)
-print "n_words", np.unique(clean).max()
+six.print_("n_words", np.unique(clean).max())
 
 # Extract numpy arrays over the fields we want covered by topics
 # Convert to categorical variables
@@ -83,9 +83,9 @@ features['story_id_codes'] = story_id
 features['author_id_codes'] = story_id
 features['time_id_codes'] = time_id
 
-print "n_authors", author_id.max()
-print "n_stories", story_id.max()
-print "n_times", time_id.max()
+six.print("n_authors", author_id.max())
+six.print("n_stories", story_id.max())
+six.print("n_times", time_id.max())
 
 # Extract outcome supervised features
 ranking = features['comment_ranking'].values
@@ -100,11 +100,11 @@ flattened, features_flat = corpus.compact_to_flat(pruned, *feature_arrs)
 (story_id_f, author_id_f, time_id_f, ranking_f, score_f) = features_flat
 
 # Save the data
-pickle.dump(corpus, open('corpus', 'w'), protocol=2)
-pickle.dump(vocab, open('vocab', 'w'), protocol=2)
+pickle.dump(corpus, open('corpus', 'wb'), protocol=2)
+pickle.dump(vocab, open('vocab', 'wb'), protocol=2)
 features.to_pickle('features.pd')
 data = dict(flattened=flattened, story_id=story_id_f, author_id=author_id_f,
             time_id=time_id_f, ranking=ranking_f, score=score_f,
             author_name=author_name, author_index=author_id)
 np.savez('data', **data)
-np.save(open('tokens', 'w'), tokens)
+np.save(open('tokens', 'wb'), tokens)

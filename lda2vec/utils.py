@@ -1,5 +1,7 @@
 from chainer import Variable
 import random
+import six
+from six.moves import xrange
 import numpy as np
 
 
